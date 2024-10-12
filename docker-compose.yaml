@@ -24,8 +24,8 @@ services:
       timeout: 20s
       retries: 1
 
-    tecnos-service:
-  path-pilot-service:
+
+  tecnos-service:
     image: tecnos1999/tecnos-server:12.10.2024.11.57.22
     networks:
       - mynet
@@ -40,11 +40,21 @@ services:
      networks:
        - mynet
      ports:
-       - "80:80"
+       - "3000:3000"
      depends_on:
-       - path-pilot-service
+       - tecnos-service
      environment:
        - REACT_APP_ENV=prod
+  tecnos-management:
+    image: tecnos1999/tecnos-management:latest
+    networks:
+      - mynet
+    ports:
+      - "3001:3001"
+    depends_on:
+      - tecnos-service
+    environment:
+      - REACT_APP_ENV=prod
   # nginx:
   #   image: floredenis2001/path-pilot-proxy:v2
   #   networks:
