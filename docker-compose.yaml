@@ -23,8 +23,10 @@ services:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       timeout: 20s
       retries: 1
-  tecnos-service:
-    image: tecnos1999/tecnos-server:latest
+
+    tecnos-service:
+  path-pilot-service:
+    image: tecnos1999/tecnos-server:12.10.2024.11.57.22
     networks:
       - mynet
     environment:
