@@ -26,7 +26,7 @@ services:
 
 
   tecnos-service:
-    image: tecnos1999/tecnos-server:14.10.2024.22.49.01
+    image: tecnos1999/tecnos-server:15.10.2024.20.01.06
     networks:
       - mynet
     environment:
