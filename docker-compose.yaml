@@ -46,7 +46,7 @@ services:
      environment:
        - REACT_APP_ENV=prod
   tecnos-management:
-    image: tecnos1999/tecnos-management:24.10.2024.12.43.07
+    image: tecnos1999/tecnos-management:24.10.2024.12.47.40
     networks:
       - mynet
     ports:
