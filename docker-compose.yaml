@@ -38,7 +38,7 @@ services:
   tecnos-gateway:
     image: tecnos1999/tecnos-gateway:02.11.2024.17.50.10
     ports:
-      - "8081:8081"
+      - "8080:8080"
     networks:
       - mynet
     environment:
@@ -56,6 +56,18 @@ services:
       SPRING_PROFILES_ACTIVE: docker
     ports:
       - "8081:8081"
+    depends_on:
+      - mysql
+      - zipkin
+      - logstash
+  tecnos-cloud:
+    image: tecnos1999/tecnos-cloud:latest
+    networks:
+      - mynet
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8082:8082"
     depends_on:
       - mysql
   clientapp:
