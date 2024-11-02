@@ -13,7 +13,7 @@ volumes:
   grafana_data:
   grafana_provisioning:
       driver: local
-      
+
 x-variables:
   elastic_password: &elastic_password 'parola'
   kibana_password: &kibana_password 'parola'
