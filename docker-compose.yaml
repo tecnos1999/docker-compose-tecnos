@@ -61,7 +61,7 @@ services:
       - zipkin
       - logstash
   tecnos-cloud:
-    image: tecnos1999/tecnos-cloud:latest
+    image: tecnos1999/tecnos-cloud:02.11.2024.18.21.15
     networks:
       - mynet
     environment:
