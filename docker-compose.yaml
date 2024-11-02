@@ -49,7 +49,7 @@ services:
       - logstash
 
   tecnos-service:
-    image: tecnos1999/tecnos-server:28.10.2024.22.11.39
+    image: tecnos1999/tecnos-server:30.10.2024.15.35.48
     networks:
       - mynet
     environment:
@@ -69,7 +69,7 @@ services:
      environment:
        - REACT_APP_ENV=prod
   tecnos-management:
-    image: tecnos1999/tecnos-management:24.10.2024.12.47.40
+    image: tecnos1999/tecnos-management:30.10.2024.17.32.06
     networks:
       - mynet
     ports:
