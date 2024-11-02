@@ -49,7 +49,7 @@ services:
       - logstash
 
   tecnos-service:
-    image: tecnos1999/tecnos-server:30.10.2024.15.35.48
+    image: tecnos1999/tecnos-server:02.11.2024.18.32.44
     networks:
       - mynet
     environment:
