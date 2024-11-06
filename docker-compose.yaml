@@ -71,7 +71,7 @@ services:
     depends_on:
       - mysql
   clientapp:
-     image: tecnos1999/tecnos-client:06.11.2024.23.19.12
+     image: tecnos1999/tecnos-client:06.11.2024.23.20.43
      networks:
        - mynet
      ports:
