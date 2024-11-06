@@ -38,7 +38,7 @@ services:
   tecnos-gateway:
     image: tecnos1999/tecnos-gateway:06.11.2024.19.13.02
     ports:
-      - "8080:8080"
+      - "80:8080"
     networks:
       - mynet
     environment:
