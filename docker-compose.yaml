@@ -12,13 +12,14 @@ volumes:
   prometheus_data:
   grafana_data:
   grafana_provisioning:
-      driver: local
+    driver: local
 
 x-variables:
   elastic_password: &elastic_password 'parola'
   kibana_password: &kibana_password 'parola'
 
 services:
+  # MySQL Database
   mysql:
     image: mysql:5.7
     environment:
@@ -31,65 +32,75 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 1
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 20s
+      retries: 3
 
+  # Spring Cloud Gateway
   tecnos-gateway:
     image: tecnos1999/tecnos-gateway:06.11.2024.22.38.28
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
     ports:
       - "80:8080"
     networks:
       - mynet
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
     depends_on:
       - mysql
       - zipkin
       - logstash
 
+  # Tecnos Service
   tecnos-service:
     image: tecnos1999/tecnos-server:06.11.2024.19.15.51
-    networks:
-      - mynet
     environment:
       SPRING_PROFILES_ACTIVE: docker
     ports:
       - "8081:8081"
+    networks:
+      - mynet
     depends_on:
       - mysql
       - zipkin
       - logstash
+
+  # Additional Tecnos Service
   tecnos-cloud:
     image: tecnos1999/tecnos-cloud:02.11.2024.18.21.15
-    networks:
-      - mynet
     environment:
       SPRING_PROFILES_ACTIVE: docker
     ports:
       - "8082:8082"
-    depends_on:
-      - mysql
-  clientapp:
-     image: tecnos1999/tecnos-client:06.11.2024.23.35.14
-     networks:
-       - mynet
-     ports:
-       - "3000:3000"
-     depends_on:
-       - tecnos-service
-     environment:
-       - REACT_APP_ENV=prod
-  tecnos-management:
-    image: tecnos1999/tecnos-management:06.11.2024.23.20.21
     networks:
       - mynet
+    depends_on:
+      - mysql
+
+  # Client Application
+  clientapp:
+    image: tecnos1999/tecnos-client:06.11.2024.23.35.14
+    environment:
+      REACT_APP_ENV: prod
     ports:
-      - "3001:3001"
+      - "3000:3000"
+    networks:
+      - mynet
     depends_on:
       - tecnos-service
+
+  # Admin Management Application
+  tecnos-management:
+    image: tecnos1999/tecnos-management:06.11.2024.23.20.21
     environment:
-      - REACT_APP_ENV=prod
+      REACT_APP_ENV: prod
+    ports:
+      - "3001:3001"
+    networks:
+      - mynet
+    depends_on:
+      - tecnos-service
+
+  # Zipkin Tracing Service
   zipkin:
     image: openzipkin/zipkin
     container_name: zipkin
@@ -98,17 +109,19 @@ services:
     ports:
       - "9411:9411"
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:9411/health || exit 1" ]
+      test: ["CMD-SHELL", "curl -f http://localhost:9411/health || exit 1"]
       interval: 30s
       timeout: 10s
+      retries: 3
 
+  # Elasticsearch Service
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.1
     container_name: elasticsearch
     environment:
       ELASTIC_PASSWORD: *elastic_password
-      discovery.type: 'single-node'
-      cluster.name: 'elasticsearch'
+      discovery.type: single-node
+      cluster.name: elasticsearch
       bootstrap.memory_lock: 'true'
       ES_JAVA_OPTS: '-Xms1g -Xmx1g'
       xpack.security.enabled: 'true'
@@ -122,23 +135,23 @@ services:
         soft: -1
         hard: -1
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:9200 || exit 1" ]
+      test: ["CMD-SHELL", "curl -f http://localhost:9200 || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
     volumes:
       - es_data:/usr/share/elasticsearch/data
 
+  # Kibana for Elasticsearch
   kibana:
     image: docker.elastic.co/kibana/kibana:8.12.1
     container_name: kibana
     environment:
-      ELASTICSEARCH_HOSTS: 'http://elasticsearch:9200'
-      ELASTICSEARCH_USERNAME: 'kibana_system'
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+      ELASTICSEARCH_USERNAME: kibana_system
       ELASTICSEARCH_PASSWORD: *kibana_password
       TELEMETRY_ENABLED: 'false'
       bootstrap.memory_lock: 'true'
-
     networks:
       - mynet
     ports:
@@ -148,6 +161,7 @@ services:
     volumes:
       - kibana_data:/usr/share/kibana/data
 
+  # Logstash
   logstash:
     image: docker.elastic.co/logstash/logstash:8.12.1
     container_name: logstash
@@ -176,6 +190,7 @@ services:
     depends_on:
       - elasticsearch
 
+  # Setup container for initializing Elasticsearch
   setup:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.1
     container_name: setup
@@ -183,7 +198,6 @@ services:
       ELASTIC_PASSWORD: *elastic_password
       KIBANA_PASSWORD: *kibana_password
       bootstrap.memory_lock: 'true'
-
     command:
       - bash
       - -c
@@ -198,6 +212,7 @@ services:
     networks:
       - mynet
 
+  # Prometheus for monitoring
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -227,15 +242,16 @@ services:
     networks:
       - mynet
 
+  # Grafana for dashboards
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
-    ports:
-      - "3200:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=secret
+      GF_SECURITY_ADMIN_PASSWORD: secret
     depends_on:
       - prometheus
+    ports:
+      - "3200:3000"
     networks:
       - mynet
     volumes:
@@ -249,7 +265,6 @@ services:
         mkdir -p /etc/grafana/provisioning/dashboards
         echo '
         apiVersion: 1
-        
         datasources:
           - name: Prometheus
             type: prometheus
@@ -260,3 +275,4 @@ services:
             editable: false
         ' > /etc/grafana/provisioning/datasources/datasource.yml
         /run.sh
+
