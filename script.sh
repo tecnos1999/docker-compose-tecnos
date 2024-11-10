@@ -1,26 +1,26 @@
 #!/bin/bash
 
-apt update -y
-apt upgrade -y
+sudo apt update -y
+sudo apt upgrade -y
 
-apt install -y nginx openssl
+sudo apt install -y nginx openssl
 
-systemctl start nginx
-systemctl enable nginx
+sudo systemctl start nginx
+sudo systemctl enable nginx
 
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -keyout /etc/ssl/private/nginx_selfsigned.key \
   -out /etc/ssl/certs/nginx_selfsigned.crt \
   -subj "/C=RO/ST=Bucuresti/L=Bucuresti/O=CompaniaMea/CN=$(hostname -I | awk '{print $1}')"
 
-openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
 
-cat > /etc/nginx/snippets/self-signed.conf <<EOF
+sudo bash -c 'cat > /etc/nginx/snippets/self-signed.conf <<EOF
 ssl_certificate /etc/ssl/certs/nginx_selfsigned.crt;
 ssl_certificate_key /etc/ssl/private/nginx_selfsigned.key;
-EOF
+EOF'
 
-cat > /etc/nginx/snippets/ssl-params.conf <<EOF
+sudo bash -c 'cat > /etc/nginx/snippets/ssl-params.conf <<EOF
 ssl_protocols TLSv1.2 TLSv1.3;
 ssl_prefer_server_ciphers on;
 ssl_dhparam /etc/ssl/certs/dhparam.pem;
@@ -36,9 +36,9 @@ resolver_timeout 5s;
 add_header X-Frame-Options DENY;
 add_header X-Content-Type-Options nosniff;
 add_header X-XSS-Protection "1; mode=block";
-EOF
+EOF'
 
-cat > /etc/nginx/sites-available/default <<EOF
+sudo bash -c 'cat > /etc/nginx/sites-available/default <<EOF
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
@@ -64,9 +64,9 @@ server {
 
     return 301 https://\$host\$request_uri;
 }
-EOF
+EOF'
 
-nginx -t
-systemctl restart nginx
+sudo nginx -t
+sudo systemctl restart nginx
 
 echo "Nginx a fost instalat și configurat cu succes cu SSL auto-semnat!"
