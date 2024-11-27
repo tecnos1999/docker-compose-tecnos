@@ -38,7 +38,7 @@ services:
 
   # Spring Cloud Gateway
   tecnos-gateway:
-    image: tecnos1999/tecnos-gateway:27.11.2024.23.08.48
+    image: tecnos1999/tecnos-gateway:27.11.2024.23.26.04
     environment:
       SPRING_PROFILES_ACTIVE: docker
     ports:
