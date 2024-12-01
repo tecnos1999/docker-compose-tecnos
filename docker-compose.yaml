@@ -35,7 +35,7 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 20s
       retries: 3
-
+    command: ["--max_allowed_packet=1G"]
   # Spring Cloud Gateway
   tecnos-gateway:
     image: tecnos1999/tecnos-gateway:28.11.2024.21.40.54
