@@ -78,7 +78,7 @@ services:
 
   # Client Application
   clientapp:
-    image: tecnos1999/tecnos-client:17.12.2024.18.37.29
+    image: tecnos1999/tecnos-client:17.12.2024.22.32.53
     environment:
       REACT_APP_ENV: production
     ports:
