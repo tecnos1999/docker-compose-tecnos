@@ -66,7 +66,7 @@ services:
 
   # Additional Tecnos Service
   tecnos-cloud:
-    image: tecnos1999/tecnos-cloud:25.11.2024.21.12.18
+    image: tecnos1999/tecnos-cloud:19.12.2024.11.35.45
     environment:
       SPRING_PROFILES_ACTIVE: docker
     ports:
