@@ -52,7 +52,7 @@ services:
 
   # Tecnos Service
   tecnos-service:
-    image: tecnos1999/tecnos-server:19.12.2024.13.48.15
+    image: tecnos1999/tecnos-server:27.12.2024.13.55.33
     environment:
       SPRING_PROFILES_ACTIVE: docker
     ports:
