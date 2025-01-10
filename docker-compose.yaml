@@ -90,7 +90,7 @@ services:
 
   # Admin Management Application
   tecnos-management:
-    image: tecnos1999/tecnos-management:10.01.2025.22.47.47
+    image: tecnos1999/tecnos-management:10.01.2025.23.08.09
     environment:
       REACT_APP_ENV: production
     ports:
